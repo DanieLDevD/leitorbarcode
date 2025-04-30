@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
 function App() {
+  const beepRef = useRef(null); // Referência ao som
+
   useEffect(() => {
     const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
 
@@ -10,11 +12,16 @@ function App() {
         document.getElementById(
           "output"
         ).innerText = `Código lido: ${decodedText}`;
+
+        // 🔊 Toca o som
+        if (beepRef.current) {
+          beepRef.current.play();
+        }
+
         scanner.clear(); // Para após uma leitura
       },
       (error) => {
-        console.log(error); // Erros de leitura
-        // Erros ignorados
+        console.log(error); // Ignora erros de leitura
       }
     );
 
@@ -33,9 +40,11 @@ function App() {
       >
         Aguardando leitura...
       </div>
+
+      {/* 🔉 Elemento de áudio escondido */}
+      <audio ref={beepRef} src="/beep.mp3" preload="auto" />
     </div>
   );
 }
 
 export default App;
-
